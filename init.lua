@@ -42,6 +42,9 @@ vim.opt.smartcase = true
 -- Keep signcolumn on by default
 vim.opt.signcolumn = 'yes'
 
+-- Set tab to 4 spaces; 8 looks too wide
+vim.opt.tabstop = 4
+
 -- Decrease update time
 vim.opt.updatetime = 250
 
