@@ -137,7 +137,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   --
-  -- 'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
   -- Use `opts = {}` to force a plugin to be loaded.
   --
@@ -147,6 +147,7 @@ require('lazy').setup({
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
   { 'akinsho/git-conflict.nvim', version = '*', config = true },
+  { 'windwp/nvim-autopairs', event = 'InsertEnter', opts = {} },
 
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
@@ -461,6 +462,17 @@ require('lazy').setup({
             },
           },
         },
+        gopls = {
+          settings = {
+            gopls = {
+              analyses = {
+                unusedparams = true,
+              },
+              staticcheck = true,
+              gofumpt = true,
+            },
+          },
+        },
       }
 
       -- Ensure the servers and tools above are installed
@@ -724,23 +736,30 @@ require('lazy').setup({
     end,
   },
   {
-    'nvim-tree/nvim-tree.lua',
+    'stevearc/oil.nvim',
+    ---@module 'oil'
+    ---@type oil.SetupOpts
+    opts = {},
+    -- Optional dependencies
+    dependencies = { { 'nvim-mini/mini.icons', opts = {} } },
+    -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons
+    -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
     lazy = false,
-    dependencies = {
-      'nvim-tree/nvim-web-devicons',
-    },
+  },
+  {
+    'fatih/vim-go',
+    ft = { 'go' },
     config = function()
-      require('nvim-tree').setup {}
+      vim.g.go_code_completion_enabled = 0
+      vim.g.go_def_mapping_enabled = 0
+      vim.g.go_diagnostics_enabled = 0
     end,
-
-    keys = {
-      {
-        '<leader>ft',
-        ':NvimTreeToggle<CR>',
-        mode = 'n',
-        desc = '[F]ile [T]ree',
-      },
-    },
+  },
+  {
+    'rafamadriz/friendly-snippets',
+    config = function()
+      require('luasnip.loaders.from_vscode').lazy_load()
+    end,
   },
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
@@ -782,6 +801,8 @@ require('lazy').setup({
     },
   },
 })
+
+require('oil').setup()
 
 vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   pattern = 'Fastfile',
